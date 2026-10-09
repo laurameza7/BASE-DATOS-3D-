@@ -66,3 +66,5 @@ INSERT INTO pregunta_frecuente (categoria, pregunta, respuesta, palabras_clave) 
 ('Servicios', '¿Qué laboratorios tiene el campus?', 'El campus cuenta con laboratorios de Física y Bioquímica, Morfología Humana, Simulación Clínica y Estudio del Trabajo. Su ubicación exacta dentro de los bloques aún no está registrada en este mapa.', 'laboratorio,laboratorios,lab,simulacion,simulación,morfologia,morfología'),
 ('Académico', '¿Cómo contacto a mi facultad?', 'Extensiones (602 7370660): Ingeniería 2272, Derecho 2261, Medicina 2191 o 2117, Enfermería 2295, Odontología 2263.', 'facultad,decano,decanatura,programa,coordinador,jefe de programa'),
 ('Servicios', '¿Con quién hablo sobre intercambios o egresados?', 'Internacionalización y Egresados: ext. 2241 o 2125.', 'intercambio,internacional,internacionalizacion,internacionalización,egresado,egresados,movilidad');
+
+
