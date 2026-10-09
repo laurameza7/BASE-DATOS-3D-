@@ -53,3 +53,4 @@ erDiagram
         timestamp creado_en
     }
 ```
+
