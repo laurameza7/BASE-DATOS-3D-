@@ -31,3 +31,5 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           psql "$DATABASE_URL" -c "SELECT 'edificios' AS tabla, COUNT(*) FROM edificio UNION ALL SELECT 'programas', COUNT(*) FROM programa UNION ALL SELECT 'lugares', COUNT(*) FROM lugar UNION ALL SELECT 'faqs', COUNT(*) FROM pregunta_frecuente;"
+
+
