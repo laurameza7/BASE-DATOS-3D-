@@ -14,6 +14,7 @@ erDiagram
         double ancho
         double profundidad
         int pisos
+        int sotanos
         string color
         string tipo
     }
