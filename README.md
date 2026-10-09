@@ -27,3 +27,5 @@ agregarlo en `V2__datos_iniciales.sql` (o en una nueva migración `V3__...sql`) 
 
 > Nota: la ubicación de los bloques es un modelo esquemático del campus. Ajustar coordenadas,
 > programas y horarios con información oficial de la universidad.
+
+
