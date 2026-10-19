@@ -25,7 +25,7 @@ diagrama/modelo-er.md      -> modelo entidad-relación
 Para que la IA sepa algo nuevo (un programa, una oficina, una pregunta frecuente) basta con
 agregarlo en `V2__datos_iniciales.sql` (o en una nueva migración `V3__...sql`) y hacer push.
 
-> Nota: la ubicación de los bloques es un modelo esquemático del campus. Ajustar coordenadas,
-> programas y horarios con información oficial de la universidad.
+> Nota: los datos se levantan con fotos y recorridos del campus. Completar por piso a medida que se verifiquen;
+> lo que no esté verificado se deja vacío en vez de inventarlo.
 
 
