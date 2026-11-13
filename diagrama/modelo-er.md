@@ -4,6 +4,7 @@
 erDiagram
     EDIFICIO ||--o{ LUGAR : contiene
     EDIFICIO ||--o{ PROGRAMA : "sede de"
+    USUARIO ||--o{ CONVERSACION : "conversa con Coopi"
     EDIFICIO {
         int id PK
         string codigo
@@ -45,11 +46,22 @@ erDiagram
         string respuesta
         string palabras_clave
     }
+    USUARIO {
+        int id PK
+        string nombre
+        string correo
+        string hash_clave
+        string rol
+        timestamp creado_en
+        timestamp ultimo_ingreso
+    }
     CONVERSACION {
         int id PK
         string pregunta
         string respuesta
         string proveedor
+        string accion
+        int usuario_id FK
         timestamp creado_en
     }
 ```

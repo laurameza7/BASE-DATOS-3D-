@@ -9,6 +9,7 @@ Motor: **PostgreSQL**, desplegado en la nube con **Neon** (plan gratuito).
 migrations/
   V1__esquema.sql          -> tablas: edificio, lugar, programa, pregunta_frecuente, conversacion
   V2__datos_iniciales.sql  -> datos del campus (bloques, oficinas, programas, preguntas frecuentes)
+  V3__usuarios.sql         -> usuarios (contraseña nunca guardada: solo BCrypt de su SHA-256) y conversaciones por usuario
 diagrama/modelo-er.md      -> modelo entidad-relación
 .github/workflows/desplegar-bd.yml -> aplica las migraciones en Neon en cada push a main
 ```
