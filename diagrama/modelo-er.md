@@ -4,6 +4,7 @@
 erDiagram
     EDIFICIO ||--o{ LUGAR : contiene
     EDIFICIO ||--o{ PROGRAMA : "sede de"
+    LUGAR ||--o{ PROGRAMA : "facultad de"
     USUARIO ||--o{ CONVERSACION : "conversa con Coopi"
     EDIFICIO {
         int id PK
@@ -38,6 +39,7 @@ erDiagram
         int duracion_semestres
         string titulo
         int edificio_id FK
+        int lugar_id FK
     }
     PREGUNTA_FRECUENTE {
         int id PK

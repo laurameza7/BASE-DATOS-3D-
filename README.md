@@ -10,6 +10,8 @@ migrations/
   V1__esquema.sql          -> tablas: edificio, lugar, programa, pregunta_frecuente, conversacion
   V2__datos_iniciales.sql  -> datos del campus (bloques, oficinas, programas, preguntas frecuentes)
   V3__usuarios.sql         -> usuarios (contraseña nunca guardada: solo BCrypt de su SHA-256) y conversaciones por usuario
+  V4__espacios_de_los_videos.sql -> facultades, laboratorios y espacios de los bloques A y B registrados en video,
+                              y la facultad (lugar) de cada programa
 diagrama/modelo-er.md      -> modelo entidad-relación
 .github/workflows/desplegar-bd.yml -> aplica las migraciones en Neon en cada push a main
 ```
