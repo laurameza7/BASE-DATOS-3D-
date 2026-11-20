@@ -1,0 +1,45 @@
+name: Probar migraciones (PostgreSQL 16)
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  probar:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: ucc
+          POSTGRES_PASSWORD: ucc
+          POSTGRES_DB: ucc_pasto3d
+        ports: [ "5432:5432" ]
+        options: >-
+          --health-cmd "pg_isready -U ucc"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      DATABASE_URL: postgresql://ucc:ucc@localhost:5432/ucc_pasto3d
+      PGOPTIONS: "-c client_min_messages=warning"   # oculta los avisos "already exists, skipping"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar cliente de PostgreSQL
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
+      - name: Aplicar migraciones en una base vacía
+        run: |
+          for f in $(ls migrations/*.sql | sort -V); do
+            echo ">> $f"; psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -q -f "$f"
+          done
+
+      - name: Aplicarlas otra vez (deben ser idempotentes, así corre el despliegue)
+        run: |
+          for f in $(ls migrations/*.sql | sort -V); do
+            echo ">> $f"; psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -q -f "$f"
+          done
+
+      - name: Verificar datos, integridad y seguridad
+        run: psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f pruebas/verificar.sql
