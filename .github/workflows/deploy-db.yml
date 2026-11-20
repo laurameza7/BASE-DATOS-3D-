@@ -17,14 +17,13 @@ jobs:
       - name: Apply migrations in order
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          PGOPTIONS: "-c client_min_messages=warning"
         run: |
           if [ -z "$DATABASE_URL" ]; then
             echo "Missing secret DATABASE_URL in Settings > Secrets and variables > Actions"; exit 1
           fi
           for f in $(ls migrations/*.sql | sort -V); do
             echo ">> Applying $f"
-            psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f "$f"
+            psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -q -f "$f"
           done
 
       - name: Check data
