@@ -1,61 +1,65 @@
-# UCC Pasto 3D — Base de datos
+# UCC Pasto 3D — Database
 
-Repositorio de la **base de datos** del proyecto *UCC Pasto 3D* (Patrones de Software).
-Motor: **PostgreSQL**, desplegado en la nube con **Neon** (plan gratuito).
+**Database** repository of the *UCC Pasto 3D* project (Software Patterns course).
+Engine: **PostgreSQL**, deployed in the cloud with **Neon** (free plan).
 
-## Estructura
+## Structure
 
 ```
 migrations/
-  V1__esquema.sql          -> tablas: edificio, lugar, programa, pregunta_frecuente, conversacion
-  V2__datos_iniciales.sql  -> datos del campus (bloques, oficinas, programas, preguntas frecuentes)
-  V3__usuarios.sql         -> usuarios (contraseña nunca guardada: solo BCrypt de su SHA-256) y conversaciones por usuario
-  V4__espacios_de_los_videos.sql -> facultades, laboratorios y espacios de los bloques A y B registrados en video,
-                              y la facultad (lugar) de cada programa
-  V5__ajustes_recorrido.sql -> paso subterráneo B (sótano 2) ↔ A (Piso 0) e índices para el historial
-pruebas/verificar.sql      -> pruebas de datos, integridad y seguridad (ver abajo)
-diagrama/modelo-er.md      -> modelo entidad-relación
-.github/workflows/desplegar-bd.yml -> aplica las migraciones en Neon en cada push a main
-.github/workflows/pruebas.yml      -> prueba las migraciones en un PostgreSQL 16 vacío en cada push
+  V0__legacy_spanish_schema.sql  -> upgrades the first version of the schema (Spanish names) keeping users
+  V1__schema.sql                 -> tables: building, place, program, faq, conversation
+  V2__initial_data.sql           -> campus data (blocks, offices, programs, frequently asked questions)
+  V3__users.sql                  -> app_user (the password is never stored: only BCrypt of its SHA-256)
+                                    and conversations per user
+  V4__video_spaces.sql           -> faculties, laboratories and spaces of blocks A and B recorded on video,
+                                    and the faculty (place) of each program
+  V5__walkthrough_adjustments.sql -> underground passage B (basement 2) ↔ A (Floor 0) and history indexes
+tests/verify.sql                 -> data, integrity and security tests (see below)
+diagram/er-model.md              -> entity-relationship model
+.github/workflows/deploy-db.yml  -> applies the migrations on Neon on every push to main
+.github/workflows/tests.yml      -> tests the migrations on an empty PostgreSQL 16 on every push
 ```
 
-## Despliegue
+The schema (tables, columns and codes such as `UNDERGRADUATE` or `GO_TO_PLACE`) is in English.
+Names, descriptions and answers stay in Spanish because they are shown to the users of the campus.
 
-1. Crear el proyecto en https://neon.tech y copiar la *connection string* (`postgresql://usuario:clave@host/neondb?sslmode=require`).
-2. En este repositorio: **Settings → Secrets and variables → Actions → New repository secret**
-   - Nombre: `DATABASE_URL` — Valor: la connection string de Neon.
-3. Hacer push a `main` (o ejecutar el workflow manualmente en la pestaña **Actions**). El workflow crea las tablas y carga los datos.
+## Deployment
 
-## Cómo agregar información
+1. Create the project at https://neon.tech and copy the *connection string* (`postgresql://user:password@host/neondb?sslmode=require`).
+2. In this repository: **Settings → Secrets and variables → Actions → New repository secret**
+   - Name: `DATABASE_URL` — Value: the Neon connection string.
+3. Push to `main` (or run the workflow manually in the **Actions** tab). The workflow creates the tables and loads the data.
 
-Para que la IA sepa algo nuevo (un programa, una oficina, una pregunta frecuente) basta con
-agregarlo en una nueva migración (`V6__...sql`) y hacer push. Las migraciones deben ser **idempotentes**
-(`IF NOT EXISTS`, `DELETE` + `INSERT`, `UPDATE`), porque el despliegue las vuelve a ejecutar todas.
+## Adding information
 
-## Pruebas
+To teach the assistant something new (a program, an office, a frequently asked question) add it in a new
+migration (`V6__...sql`) and push. Migrations must be **idempotent** (`IF NOT EXISTS`, `DELETE` + `INSERT`,
+`UPDATE`) because every deployment runs all of them again.
 
-En cada push, GitHub Actions levanta un PostgreSQL 16 vacío, aplica las migraciones **dos veces**
-(para comprobar que se pueden repetir sin error) y corre `pruebas/verificar.sql`, que revisa:
+## Tests
 
-| # | Qué comprueba |
+On every push, GitHub Actions starts an empty PostgreSQL 16, applies the migrations **twice** (to check they
+can be repeated without errors) and runs `tests/verify.sql`, which checks:
+
+| # | What it checks |
 |---|---|
-| 1 | Hay edificios, al menos 60 lugares, 19 programas y las preguntas frecuentes |
-| 2 | Bloque A con 6 pisos y sótano, Bloque B con 7 pisos y 2 sótanos |
-| 3 | Ningún lugar está en un piso que no exista en su edificio |
-| 4 | No hay lugares repetidos dentro de un mismo bloque |
-| 5–6 | Cada programa de una facultad apunta a su facultad dentro del campus |
-| 7 | La tabla `usuario` no tiene columnas para la contraseña ni su huella, solo `hash_clave` (BCrypt) |
-| 8 | No se puede registrar dos veces el mismo correo |
-| 9 | Existen los índices que usa el backend |
+| 1 | There are buildings, at least 60 places, 19 programs and the frequently asked questions |
+| 2 | Block A has 6 floors and a basement, Block B has 7 floors and 2 basements |
+| 3 | No place is on a floor that does not exist in its building |
+| 4 | No place is repeated inside the same block |
+| 5–6 | Every faculty program points to its own faculty on campus; levels and modalities are known codes |
+| 7 | `app_user` has no column for the password or its fingerprint, only `password_hash` (BCrypt) |
+| 8 | The same email cannot be registered twice |
+| 9 | The indexes used by the backend exist |
+| 10 | No table or column keeps a Spanish name from the first version of the schema |
 
-Para correrlas en el computador:
+To run them locally:
 
 ```bash
 for f in $(ls migrations/*.sql | sort -V); do psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f "$f"; done
-psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f pruebas/verificar.sql
+psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f tests/verify.sql
 ```
 
-> Nota: los datos se levantan con fotos y recorridos del campus. Completar por piso a medida que se verifiquen;
-> lo que no esté verificado se deja vacío en vez de inventarlo.
-
-
+> Note: the data comes from photos and walkthroughs of the campus. Anything that has not been verified
+> is left empty instead of being invented.
