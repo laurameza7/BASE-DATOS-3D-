@@ -1,4 +1,4 @@
-name: Probar migraciones (PostgreSQL 16)
+name: Test migrations (PostgreSQL 16)
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  probar:
+  test:
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -22,24 +22,24 @@ jobs:
           --health-interval 5s --health-timeout 5s --health-retries 10
     env:
       DATABASE_URL: postgresql://ucc:ucc@localhost:5432/ucc_pasto3d
-      PGOPTIONS: "-c client_min_messages=warning"   # oculta los avisos "already exists, skipping"
+      PGOPTIONS: "-c client_min_messages=warning"   # hides the "already exists, skipping" notices
     steps:
       - uses: actions/checkout@v4
 
-      - name: Instalar cliente de PostgreSQL
+      - name: Install PostgreSQL client
         run: sudo apt-get update && sudo apt-get install -y postgresql-client
 
-      - name: Aplicar migraciones en una base vacía
+      - name: Apply migrations on an empty database
         run: |
           for f in $(ls migrations/*.sql | sort -V); do
             echo ">> $f"; psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -q -f "$f"
           done
 
-      - name: Aplicarlas otra vez (deben ser idempotentes, así corre el despliegue)
+      - name: Apply them again (they must be idempotent, the deployment does this)
         run: |
           for f in $(ls migrations/*.sql | sort -V); do
             echo ">> $f"; psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -q -f "$f"
           done
 
-      - name: Verificar datos, integridad y seguridad
-        run: psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f pruebas/verificar.sql
+      - name: Check data, integrity and security
+        run: psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f tests/verify.sql
